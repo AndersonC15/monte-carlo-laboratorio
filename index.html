@@ -1,0 +1,491 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#151329">
+  <meta name="description" content="Laboratorio interactivo del método Monte Carlo. Estima π, probabilidades, integrales y volúmenes con muestras aleatorias.">
+  <title>Monte Carlo Lab | El azar para estimar lo que es fijo</title>
+  <link rel="icon" href="./assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="./assets/styles.css">
+  <script src="./assets/simulation.js" defer></script>
+  <script src="./assets/charts.js" defer></script>
+  <script src="./assets/app.js" defer></script>
+</head>
+<body>
+  <svg xmlns="http://www.w3.org/2000/svg" class="symbol-bank" aria-hidden="true">
+    <symbol id="i-mark" viewBox="0 0 24 24"><circle cx="6" cy="6" r="2" fill="currentColor" stroke="none"/><circle cx="18" cy="6" r="2" fill="currentColor" stroke="none"/><circle cx="6" cy="18" r="2" fill="currentColor" stroke="none"/><circle cx="18" cy="18" r="2" fill="currentColor" stroke="none"/><path d="m8 16 8-8"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M4 12h15m-6-6 6 6-6 6"/></symbol>
+    <symbol id="i-external" viewBox="0 0 24 24"><path d="M7 17 17 7M7 7h10v10"/></symbol>
+    <symbol id="i-book" viewBox="0 0 24 24"><path d="M12 6v14M3 4c4-.6 7 .1 9 2 2-1.9 5-2.6 9-2v14c-4-.6-7 .1-9 2-2-1.9-5-2.6-9-2z"/></symbol>
+    <symbol id="i-play" viewBox="0 0 24 24"><path d="m8 5 12 7-12 7z" fill="currentColor" stroke="none"/></symbol>
+    <symbol id="i-pause" viewBox="0 0 24 24"><path d="M9 5v14m6-14v14" stroke-width="2.7"/></symbol>
+    <symbol id="i-reset" viewBox="0 0 24 24"><path d="M5 5v5h5m-5 0a8 8 0 1 1 .8 6.5"/></symbol>
+    <symbol id="i-shuffle" viewBox="0 0 24 24"><path d="M3 6h3c5 0 7 12 12 12h3m-4-4 4 4-4 4M3 18h3c1.4 0 2.5-.9 3.6-2.4M14 8.4c1.2-1.5 2.4-2.4 4-2.4h3m-4-4 4 4-4 4"/></symbol>
+    <symbol id="i-dice" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="4"/><path d="M8.5 8.5h.01m7 0h.01m-3.5 3.5h.01m-3.5 3.5h.01m7 0h.01" stroke-width="2.6"/></symbol>
+    <symbol id="i-cube" viewBox="0 0 24 24"><path d="m12 3 8 4.5v9L12 21l-8-4.5v-9L12 3Zm0 9 8-4.5M12 12 4 7.5m8 4.5v9"/></symbol>
+    <symbol id="i-curve" viewBox="0 0 24 24"><path d="M4 4v16h16M7 16c4-.4 7-3 11-10"/></symbol>
+    <symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/></symbol>
+    <symbol id="i-grid" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M4 12h16M12 4v16"/></symbol>
+    <symbol id="i-chevron" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></symbol>
+  </svg>
+  <a class="skip-link" href="#contenido">Saltar al contenido</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="#inicio" aria-label="Monte Carlo Lab, inicio">
+        <span class="brand-icon"><svg class="icon" aria-hidden="true"><use href="#i-mark"></use></svg></span>
+        <span>Monte Carlo<span class="brand-lab">Lab</span></span>
+      </a>
+      <nav class="main-nav" aria-label="Navegación principal">
+        <a href="#laboratorio">Laboratorio</a>
+        <a href="#metodo">Método</a>
+        <a href="#preguntas">Preguntas</a>
+        <a class="nav-manual" href="#manual"><svg class="icon" aria-hidden="true"><use href="#i-book"></use></svg> Manual</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="contenido">
+    <section class="hero" id="inicio" aria-labelledby="titulo">
+      <div class="wrap hero-grid">
+        <div class="hero-content">
+          <p class="eyebrow hero-kicker"><span class="signal"></span> Simulación de sistemas <span class="kicker-divider"></span> Semana 07</p>
+          <h1 id="titulo">El azar para estimar <em>lo que es fijo.</em></h1>
+          <p class="hero-intro">Descubre el método de Monte Carlo lanzando puntos, tirando dados y cambiando las reglas del muestreo. Observa cómo muchos intentos se convierten en una estimación.</p>
+          <div class="hero-actions">
+            <a class="button button-mint" href="#laboratorio">Abrir el laboratorio <svg class="icon" aria-hidden="true"><use href="#i-arrow"></use></svg></a>
+            <a class="button button-glass" href="#metodo">Entender el método</a>
+          </div>
+          <ul class="hero-facts" aria-label="Contenido de la página">
+            <li><span>04</span> experimentos</li>
+            <li><span>100.000</span> muestras por corrida</li>
+            <li><span>20</span> preguntas</li>
+          </ul>
+        </div>
+        <figure class="hero-figure" aria-labelledby="hero-caption">
+          <div class="hero-card">
+            <div class="hero-card-head"><span><i></i> EXPERIMENTO 01</span><span>GEOMETRÍA / 2D</span></div>
+            <img src="./assets/hero.svg" width="520" height="334" alt="Nube de puntos en un cuadrado. Los puntos turquesa están dentro del cuarto de círculo y los violetas están fuera.">
+            <figcaption id="hero-caption"><span>Referencia matemática</span><strong>π <i>≈</i> 3,14159265…</strong></figcaption>
+          </div>
+        </figure>
+      </div>
+      <div class="wrap hero-foot" aria-hidden="true"><span>MODELO</span><i></i><span>MUESTREO</span><i></i><span>ESTIMACIÓN</span></div>
+    </section>
+
+    <section class="section lab-section wrap" id="laboratorio" aria-labelledby="lab-title">
+      <div class="section-intro">
+        <div><p class="eyebrow section-kicker"><span>01</span> Experimentos</p><h2 id="lab-title">Laboratorio interactivo</h2></div>
+        <p>Elige un problema, genera muestras y compara la estimación con un valor de referencia.</p>
+      </div>
+      <noscript><p class="notice">Activa JavaScript para ejecutar las simulaciones. Puedes seguir leyendo el método y las preguntas de participación.</p></noscript>
+      <div class="lab-shell">
+        <div class="lab-tabs" role="tablist" aria-label="Experimentos">
+          <button type="button" id="tab-pi" role="tab" aria-selected="true" aria-controls="experiment-panel" data-model="pi"><span class="tab-icon pi-icon" aria-hidden="true">π</span><span><strong>Estimar π</strong><small>Cuarto de círculo</small></span></button>
+          <button type="button" id="tab-dice" role="tab" aria-selected="false" aria-controls="experiment-panel" tabindex="-1" data-model="dice"><span class="tab-icon"><svg class="icon" aria-hidden="true"><use href="#i-dice"></use></svg></span><span><strong>Dos dados</strong><small>Probabilidad</small></span></button>
+          <button type="button" id="tab-integral" role="tab" aria-selected="false" aria-controls="experiment-panel" tabindex="-1" data-model="integral"><span class="tab-icon"><svg class="icon" aria-hidden="true"><use href="#i-curve"></use></svg></span><span><strong>Integrar</strong><small>Promedio de f(x)</small></span></button>
+          <button type="button" id="tab-volume" role="tab" aria-selected="false" aria-controls="experiment-panel" tabindex="-1" data-model="volume"><span class="tab-icon"><svg class="icon" aria-hidden="true"><use href="#i-cube"></use></svg></span><span><strong>Volumen 3D</strong><small>Octante de esfera</small></span></button>
+        </div>
+
+        <div id="experiment-panel" role="tabpanel" aria-labelledby="tab-pi" class="experiment-panel">
+          <form class="controls" id="experiment-form" autocomplete="off">
+            <div class="controls-heading"><span class="small-tag">Configuración</span><h3 id="model-title">Estimar π</h3><p id="model-question">¿Qué fracción del cuadrado ocupa un cuarto de círculo?</p></div>
+
+            <div class="control-group">
+              <label for="samples">Muestras objetivo <span>N</span></label>
+              <input id="samples" name="samples" type="number" min="1" max="100000" step="1" value="1000" required aria-describedby="samples-hint">
+              <div class="presets" aria-label="Tamaños predefinidos">
+                <button type="button" data-size="100" aria-pressed="false">100</button>
+                <button type="button" data-size="1000" aria-pressed="true">1 mil</button>
+                <button type="button" data-size="10000" aria-pressed="false">10 mil</button>
+                <button type="button" data-size="100000" aria-pressed="false">100 mil</button>
+              </div>
+              <small class="field-hint" id="samples-hint">Entre 1 y 100.000 por corrida.</small>
+            </div>
+
+            <div class="control-group">
+              <label for="seed">Semilla</label>
+              <div class="seed-field">
+                <input id="seed" name="seed" type="number" min="0" max="4294967295" step="1" value="42" required aria-describedby="seed-hint">
+                <button class="icon-button" id="new-seed" type="button" title="Generar otra semilla" aria-label="Generar otra semilla"><svg class="icon" aria-hidden="true"><use href="#i-shuffle"></use></svg></button>
+              </div>
+              <small class="field-hint" id="seed-hint">Repite la secuencia con la misma semilla.</small>
+            </div>
+
+            <div class="control-group" id="pi-options">
+              <label for="sampling">Distribución de puntos</label>
+              <select id="sampling" name="sampling">
+                <option value="uniform">Uniforme</option>
+                <option value="biased">Sesgada hacia el origen</option>
+              </select>
+            </div>
+
+            <div class="control-group" id="dice-options" hidden>
+              <label for="dice-target">Suma objetivo</label>
+              <input id="dice-target" name="dice-target" type="number" min="2" max="12" step="1" value="7" required disabled>
+            </div>
+
+            <div class="integral-options" id="integral-options" hidden>
+              <div class="control-group">
+                <label for="function">Función f(x)</label>
+                <select id="function" name="function" disabled>
+                  <option value="square">x²</option>
+                  <option value="sine">sen(x)</option>
+                  <option value="exponential">e⁻ˣ</option>
+                </select>
+              </div>
+              <div class="interval-fields">
+                <div class="control-group"><label for="lower">Límite a</label><input id="lower" name="lower" type="number" min="-5" max="5" step="0.000001" value="0" required disabled></div>
+                <div class="control-group"><label for="upper">Límite b</label><input id="upper" name="upper" type="number" min="-5" max="5" step="0.000001" value="1" required disabled></div>
+              </div>
+              <small class="field-hint">Elige −5 ≤ a &lt; b ≤ 5, con hasta seis decimales. Los ángulos están en radianes.</small>
+            </div>
+
+            <div class="control-group speed-field">
+              <label for="speed">Velocidad de animación</label>
+              <select id="speed" name="speed">
+                <option value="slow">Lenta</option>
+                <option value="normal" selected>Normal</option>
+                <option value="fast">Rápida</option>
+              </select>
+            </div>
+
+            <p class="form-message" id="form-message" role="status" hidden></p>
+            <div class="control-actions">
+              <button class="button button-primary" id="play" type="submit"><svg class="icon" aria-hidden="true"><use id="play-icon" href="#i-play"></use></svg><span id="play-label">Animar corrida</span></button>
+              <button class="button button-secondary" id="finish" type="button">Calcular todo</button>
+              <button class="button button-secondary" id="step" type="button">+1 muestra</button>
+              <button class="button button-secondary reset-button" id="reset" type="button"><svg class="icon" aria-hidden="true"><use href="#i-reset"></use></svg> Reiniciar</button>
+            </div>
+          </form>
+
+          <div class="results">
+            <div class="result-top">
+              <div class="view-switch" role="group" aria-label="Vista del gráfico">
+                <button type="button" id="show-samples" aria-pressed="true">Muestras</button>
+                <button type="button" id="show-convergence" aria-pressed="false">Convergencia</button>
+              </div>
+              <div class="run-count" aria-label="Progreso"><span class="signal"></span><span id="progress">0 / 1.000 muestras</span></div>
+            </div>
+            <div class="plot-panel">
+              <div class="plot-top"><span id="plot-title">Cuadrado unidad</span><span id="plot-unit">X, Y ∈ [0, 1]</span></div>
+              <div class="progress-track" aria-hidden="true"><span id="progress-fill"></span></div>
+              <div class="plot-area" id="plot-area">
+                <canvas id="plot" role="img" aria-label="Cuarto de círculo y puntos muestreados">Los resultados numéricos y las muestras recientes aparecen debajo.</canvas>
+              </div>
+              <div class="plot-bottom">
+                <div class="legend" id="legend" aria-label="Leyenda"></div>
+                <div class="rotate-controls" id="rotate-controls" hidden role="group" aria-label="Girar vista tridimensional">
+                  <button type="button" id="rotate-left" aria-label="Girar a la izquierda" title="Girar a la izquierda">↶</button>
+                  <button type="button" id="rotate-right" aria-label="Girar a la derecha" title="Girar a la derecha">↷</button>
+                  <button type="button" id="rotate-auto" aria-pressed="false">Giro automático</button>
+                </div>
+              </div>
+            </div>
+            <p class="plot-note" id="plot-note">Cada punto se evalúa con la regla x² + y² ≤ 1.</p>
+            <dl class="metrics">
+              <div class="metric metric-main"><dt>Estimación</dt><dd id="estimate">—</dd></div>
+              <div class="metric"><dt>Referencia</dt><dd id="reference">3,141593</dd></div>
+              <div class="metric"><dt>Error absoluto</dt><dd id="error">—</dd></div>
+              <div class="metric"><dt>Error estándar est.</dt><dd id="standard-error">—</dd></div>
+            </dl>
+            <div class="calculation">
+              <div><span class="small-tag">Cálculo de la corrida</span><p class="equation" id="live-formula">π̂ = 4 × C / N</p></div>
+              <p id="live-explanation">C cuenta los puntos que cumplen x² + y² ≤ 1.</p>
+            </div>
+            <details class="sample-details" id="sample-details">
+              <summary>Inspeccionar las últimas muestras</summary>
+              <p class="field-hint">La tabla redondea los números. La evaluación usa los valores originales.</p>
+              <div class="table-wrap"><table class="sample-table"><caption class="sr-only">Detalle de las últimas seis muestras</caption><thead><tr><th scope="col">#</th><th scope="col" id="sample-input-title">Punto (x, y)</th><th scope="col" id="sample-evaluation-title">x² + y²</th><th scope="col" id="sample-value-title">Aporta</th></tr></thead><tbody id="sample-rows"><tr><td colspan="4">Genera muestras para ver el detalle.</td></tr></tbody></table></div>
+            </details>
+            <p class="sr-only" id="announcement" role="status"></p>
+          </div>
+        </div>
+      </div>
+      <div class="lab-tip"><svg class="icon" aria-hidden="true"><use href="#i-target"></use></svg><p><strong>Prueba de un minuto.</strong> En π, compara 100 y 10.000 muestras con semilla 42. Después conserva 10.000 y cambia la semilla. Explica qué cambió y qué valor se mantiene fijo.</p></div>
+    </section>
+
+    <section class="method section" id="metodo" aria-labelledby="method-title">
+      <div class="wrap">
+        <div class="section-intro">
+          <div><p class="eyebrow section-kicker"><span>02</span> Fundamentos</p><h2 id="method-title">Del azar a la respuesta</h2></div>
+          <p>Monte Carlo es una familia de métodos que usa muestras aleatorias repetidas para aproximar cantidades como una probabilidad, un área o una integral.</p>
+        </div>
+        <ol class="steps">
+          <li><span>01</span><h3>Define</h3><p>Elige la cantidad que quieres estimar y el modelo que la conecta con el azar.</p></li>
+          <li><span>02</span><h3>Muestrea</h3><p>Genera N muestras de la distribución del modelo. En π, cada coordenada es uniforme en [0, 1].</p></li>
+          <li><span>03</span><h3>Evalúa</h3><p>Aplica una regla a cada muestra. Por ejemplo, asigna 1 si un punto cae dentro y 0 si cae fuera.</p></li>
+          <li><span>04</span><h3>Resume</h3><p>Promedia las evaluaciones y aplica el factor de escala del problema cuando corresponda.</p></li>
+        </ol>
+
+        <div class="theory-grid">
+          <article class="theory-card theory-dark">
+            <span class="small-tag">Modelo matemático</span>
+            <h3>El promedio estima una esperanza</h3>
+            <p class="equation equation-large" aria-label="Mu estimada es igual a uno sobre N por la suma de g de X sub i">μ̂<sub>N</sub> = (1/N) ∑ g(X<sub>i</sub>)</p>
+            <p>El objetivo es μ = E[g(X)], el promedio que predice el modelo. X<sub>i</sub> es una muestra y g(X<sub>i</sub>) es el valor que aporta. Con muestras independientes de la misma distribución y esperanza finita, la ley de los grandes números hace que el promedio se acerque a μ al crecer N.</p>
+          </article>
+          <article class="theory-card">
+            <span class="small-tag">El ejemplo de las diapositivas 2–7</span>
+            <h3>¿De dónde sale el 4?</h3>
+            <p>El cuadrado de lado 1 tiene área 1. El cuarto de círculo de radio 1 tiene área π/4. Con puntos uniformes, su probabilidad de impacto es π/4, que aproximamos con C/N.</p>
+            <p class="equation equation-large">π̂ = 4 × C / N</p>
+            <p>Ejemplo ilustrativo. Si 785 de 1.000 puntos caen dentro, 4 × 785/1.000 da 3,14. El número π es fijo y el conteo C puede variar de una corrida a otra.</p>
+          </article>
+        </div>
+        <details class="code-details">
+          <summary>¿Qué hace la semilla?</summary>
+          <div class="code-body"><p>Un generador pseudoaleatorio usa una regla y un estado inicial. La semilla determina ese estado. En la web, el mismo modelo y la misma semilla producen la misma secuencia, lo que permite comparar tamaños partiendo de las mismas muestras. Para comparar corridas distintas, cambia la semilla. La teoría idealiza las muestras como independientes.</p></div>
+        </details>
+
+        <div class="precision" id="precision">
+          <div class="precision-copy">
+            <p class="eyebrow section-kicker"><span>↗</span> Precisión</p>
+            <h3>Más muestras, menos dispersión</h3>
+            <p>Para el promedio de muestras independientes con varianza finita, el error estándar es σ/√N. Multiplicar N por cuatro reduce a la mitad esa escala de variación. El error absoluto de una corrida puede subir o bajar al agregar muestras.</p>
+            <dl class="definition-list">
+              <div><dt>Error absoluto</dt><dd>|estimación − referencia|. Solo se puede calcular aquí porque conocemos la referencia.</dd></div>
+              <div><dt>Error estándar estimado</dt><dd>s/√N, con s igual a la desviación muestral de los aportes, incluida la escala. Con una sola muestra queda sin estimar. Si los aportes observados son idénticos, s vale cero en esa corrida.</dd></div>
+              <div><dt>Sesgo</dt><dd>Una diferencia sistemática frente al objetivo. Con un muestreo inadecuado, la estimación puede estabilizarse cerca de un valor equivocado.</dd></div>
+            </dl>
+          </div>
+          <div class="repeat-card">
+            <div class="repeat-top"><div><span class="small-tag">Experimento de precisión</span><h4>Repetir la estimación de π</h4></div><label for="repeat-count">Corridas por tamaño<select id="repeat-count"><option value="16">16</option><option value="48" selected>48</option><option value="96">96</option></select></label></div>
+            <p class="repeat-help">Compara el error típico observado (RMSE) con el valor teórico. Las corridas son reproducibles y usan muestreo uniforme.</p>
+            <div class="table-wrap"><table class="repeat-table"><caption class="sr-only">Error por tamaño de muestra en corridas repetidas de π</caption><thead><tr><th scope="col">Muestras</th><th scope="col">Observado</th><th scope="col">Teórico</th></tr></thead><tbody id="repeat-rows"><tr><td colspan="3">Pulsa «Comparar corridas» para calcular la tabla.</td></tr></tbody></table></div>
+            <button class="button button-secondary" id="compare-runs" type="button">Comparar corridas <svg class="icon" aria-hidden="true"><use href="#i-arrow"></use></svg></button>
+            <p class="field-hint repeat-status" id="repeat-status" role="status">El RMSE es la raíz del promedio de los errores al cuadrado.</p>
+          </div>
+        </div>
+
+        <div class="compare-block" id="comparacion">
+          <div><span class="small-tag">Tres formas de resolver lo mismo</span><h3>¿Cuándo conviene Monte Carlo?</h3><p>Para una integral sencilla como ∫<sub>0</sub><sup>1</sup> x² dx, la solución analítica es directa. Monte Carlo resulta útil cuando podemos muestrear y evaluar el modelo, pero resolverlo con una fórmula o una cuadrícula es difícil.</p></div>
+          <div class="table-wrap"><table class="method-table"><caption class="sr-only">Tres métodos para integrar x al cuadrado entre cero y uno</caption><thead><tr><th scope="col">Método</th><th scope="col">Cómo se obtiene</th><th scope="col">Resultado</th></tr></thead>
+            <tbody>
+              <tr><th scope="row">Analítico</th><td>Primitiva x³/3 entre 0 y 1.</td><td>1/3, exacto</td></tr>
+              <tr><th scope="row">Numérico determinístico</th><td>Cuatro trapecios con puntos equidistantes.</td><td>0,34375</td></tr>
+              <tr><th scope="row">Monte Carlo</th><td>Promedio de x² para cuatro x ilustrativos (0,10 · 0,30 · 0,60 · 0,90).</td><td>0,31750</td></tr>
+            </tbody>
+          </table></div>
+          <p class="compare-note">Ventajas y costos. El muestreo es flexible y puede ayudar en alta dimensión. Una precisión exigente puede requerir muchas evaluaciones, y el resultado depende del modelo y de cómo se generan las muestras.</p>
+        </div>
+
+        <div class="applications">
+          <h3>¿Dónde se usa?</h3>
+          <ul>
+            <li><strong>Medicina</strong><span>Simular trayectorias de fotones y su detección en imágenes de emisión.</span><a href="#ref-medicina">[4]</a></li>
+            <li><strong>Electrónica</strong><span>Estimar la confiabilidad de dispositivos de potencia bajo un modelo de fallas.</span><a href="#ref-electronica">[5]</a></li>
+            <li><strong>Señales</strong><span>Estimar parámetros a partir de mediciones ruidosas, por ejemplo en localización.</span><a href="#ref-senales">[6]</a></li>
+            <li><strong>Física y calor</strong><span>Aproximar soluciones de ecuaciones de difusión con trayectorias aleatorias.</span><a href="#ref-fisica">[7]</a></li>
+            <li><strong>Gráficos 3D</strong><span>Muestrear contribuciones de luz para estimar el color de los píxeles.</span><a href="#ref-graficos">[8]</a></li>
+          </ul>
+        </div>
+
+        <details class="code-details" id="python">
+          <summary><span>Del simulador a Python</span><small>Ejemplo reproducible</small></summary>
+          <div class="code-body">
+            <p>El bucle genera pares (x, y), suma los aciertos y muestra la estimación al llegar a cada N. Copia el ejemplo en <code>monte_carlo.py</code> y ejecuta <code>python3 monte_carlo.py</code> (en Windows también puedes usar <code>py monte_carlo.py</code>). Python y la web usan generadores distintos, por lo que sus secuencias difieren incluso con el mismo número de semilla.</p>
+            <pre><code>from math import pi
+from random import Random
+
+rng = Random(42)
+tamanos = (100, 1_000, 10_000, 100_000)
+dentro = 0
+for n in range(1, max(tamanos) + 1):
+    x, y = rng.random(), rng.random()
+    dentro += int(x*x + y*y &lt;= 1)
+    if n in tamanos:
+        estimacion = 4 * dentro / n
+        error = abs(estimacion - pi)
+        print(f"N={n:6d}  pi~{estimacion:.6f}  error={error:.6f}")</code></pre>
+          </div>
+        </details>
+      </div>
+    </section>
+
+    <section class="section wrap questions-section" id="preguntas" aria-labelledby="questions-title">
+      <div class="section-intro">
+        <div><p class="eyebrow section-kicker"><span>03</span> Preguntas</p><h2 id="questions-title">Pon a prueba tus ideas</h2></div>
+        <p>Responde las 5 preguntas del control y participa con las 15 preguntas del documento.</p>
+      </div>
+      <div class="questions-grid">
+        <article class="quiz-card" id="control" aria-labelledby="quiz-title">
+          <div class="quiz-heading"><div><span class="small-tag">Control de aprendizaje</span><h3 id="quiz-title">Comprueba lo que entendiste</h3></div><span class="duration">5 preguntas</span></div>
+          <form id="quiz" autocomplete="off">
+            <fieldset data-correct="b" data-explanation="π es una constante. Al cambiar las muestras puede cambiar el conteo C y, por tanto, la estimación 4C/N.">
+              <legend>1. Al cambiar solo la semilla en el experimento de π, ¿qué puede cambiar?</legend>
+              <label><input name="q1" type="radio" value="a" required> El valor matemático de π.</label>
+              <label><input name="q1" type="radio" value="b"> El conteo de aciertos y la estimación.</label>
+              <label><input name="q1" type="radio" value="c"> El área del cuadrado.</label>
+              <p class="quiz-feedback" hidden></p>
+            </fieldset>
+            <fieldset data-correct="a" data-explanation="La escala del error estándar es 1/√N. Al multiplicar N por cuatro, el denominador se duplica.">
+              <legend>2. Con el mismo modelo y muestras independientes, ¿qué pasa con el error estándar teórico si N se multiplica por 4?</legend>
+              <label><input name="q2" type="radio" value="a" required> Se reduce a la mitad.</label>
+              <label><input name="q2" type="radio" value="b"> Se divide para cuatro.</label>
+              <label><input name="q2" type="radio" value="c"> Se duplica.</label>
+              <p class="quiz-feedback" hidden></p>
+            </fieldset>
+            <fieldset data-correct="c" data-explanation="El promedio se concentra alrededor de lo que predice la distribución que realmente se usó. El sesgo del ejemplo persiste al aumentar N.">
+              <legend>3. ¿Qué ocurre al agregar muestras en la demostración con sesgo?</legend>
+              <label><input name="q3" type="radio" value="a" required> La distribución se vuelve uniforme por repetición.</label>
+              <label><input name="q3" type="radio" value="b"> El error frente a π se divide siempre para dos.</label>
+              <label><input name="q3" type="radio" value="c"> La estimación tiende al objetivo del modelo sesgado.</label>
+              <p class="quiz-feedback" hidden></p>
+            </fieldset>
+            <fieldset data-correct="b" data-explanation="Hay 36 parejas ordenadas equiprobables. Seis de ellas suman 7, así que P(suma = 7) = 6/36 = 1/6.">
+              <legend>4. ¿Cuál es la probabilidad de sumar 7 con dos dados justos e independientes?</legend>
+              <label><input name="q4" type="radio" value="a" required> 1/11</label>
+              <label><input name="q4" type="radio" value="b"> 6/36</label>
+              <label><input name="q4" type="radio" value="c"> 7/36</label>
+              <p class="quiz-feedback" hidden></p>
+            </fieldset>
+            <fieldset data-correct="a" data-explanation="Cuando X es uniforme en [a, b], su densidad es 1/(b−a). Multiplicar el promedio por b−a recupera la escala de la integral.">
+              <legend>5. Para estimar una integral en [a, b], ¿por qué se multiplica el promedio de f(X) por b−a?</legend>
+              <label><input name="q5" type="radio" value="a" required> Para ajustar el promedio a la longitud del intervalo.</label>
+              <label><input name="q5" type="radio" value="b"> Para cambiar la semilla.</label>
+              <label><input name="q5" type="radio" value="c"> Para contar solo las muestras positivas.</label>
+              <p class="quiz-feedback" hidden></p>
+            </fieldset>
+            <div class="quiz-actions"><button class="button button-primary" type="submit">Revisar respuestas</button><button class="button button-secondary" type="reset">Volver a intentar</button><p id="quiz-score" role="status"></p></div>
+          </form>
+        </article>
+
+        <article class="quiz-card participation-card" id="participacion" aria-labelledby="participation-title">
+          <div class="quiz-heading"><div><span class="small-tag">Participación</span><h3 id="participation-title">15 preguntas sobre Monte Carlo</h3></div><span class="duration">15 preguntas</span></div>
+          <p class="participation-intro">Preguntas del documento <cite>Preguntas_Monte_Carlo_15_Participacion.pdf</cite>. Abre cada pregunta para consultar su respuesta orientativa.</p>
+          <p class="participation-intro">Las respuestas son ejemplos: puedes explicar la misma idea con tus propias palabras.</p>
+          <ol class="participation-list" aria-label="Preguntas de participación del documento">
+            <li>
+              <details class="participation-question">
+                <summary><span class="question-slide">Diapositiva 2 · Estimación de π</span><span class="question-text">01. ¿Cómo nos ayuda contar los puntos que caen dentro de un cuarto de círculo a aproximar el número π?</span></summary>
+                <p><strong>Respuesta orientativa.</strong> Porque la proporción de puntos dentro del cuarto de círculo aproxima la proporción de áreas, que está relacionada con π.</p>
+              </details>
+            </li>
+            <li>
+              <details class="participation-question">
+                <summary><span class="question-slide">Diapositiva 3 · Concepto de Monte Carlo</span><span class="question-text">02. ¿Cuáles son las tres acciones principales que realizamos en el método de Monte Carlo?</span></summary>
+                <p><strong>Respuesta orientativa.</strong> Generar valores aleatorios, repetir el procedimiento y resumir los resultados.</p>
+              </details>
+            </li>
+            <li>
+              <details class="participation-question">
+                <summary><span class="question-slide">Diapositiva 4 · Azar y objetivo fijo</span><span class="question-text">03. Si realizamos varias simulaciones para calcular π y obtenemos resultados diferentes, ¿significa que el valor real de π está cambiando? ¿Por qué?</span></summary>
+                <p><strong>Respuesta orientativa.</strong> No. π es constante; las estimaciones cambian porque las muestras aleatorias son diferentes.</p>
+              </details>
+            </li>
+            <li>
+              <details class="participation-question">
+                <summary><span class="question-slide">Diapositiva 5 · Funcionamiento</span><span class="question-text">04. Después de generar muestras aleatorias, ¿qué debemos hacer con ellas antes de obtener una estimación?</span></summary>
+                <p><strong>Respuesta orientativa.</strong> Evaluar cada muestra para luego reunir sus resultados y calcular una estimación.</p>
+              </details>
+            </li>
+            <li>
+              <details class="participation-question">
+                <summary><span class="question-slide">Diapositiva 6 · Ejemplo visual de π</span><span class="question-text">05. ¿Qué sucede generalmente con la estimación de π cuando aumentamos considerablemente la cantidad de puntos aleatorios?</span></summary>
+                <p><strong>Respuesta orientativa.</strong> Generalmente la estimación se vuelve más estable y tiende a acercarse al valor real, aunque no mejora necesariamente en cada intento.</p>
+              </details>
+            </li>
+            <li>
+              <details class="participation-question">
+                <summary><span class="question-slide">Diapositiva 7 · Cálculo de π</span><span class="question-text">06. Para aproximar π utilizando puntos aleatorios, ¿qué dos cantidades necesitamos contar?</span></summary>
+                <p><strong>Respuesta orientativa.</strong> Los puntos que caen dentro del cuarto de círculo y el número total de puntos.</p>
+              </details>
+            </li>
+            <li>
+              <details class="participation-question">
+                <summary><span class="question-slide">Diapositiva 8 · Modelo matemático</span><span class="question-text">07. ¿Qué hacemos con los resultados obtenidos de las muestras para calcular una estimación mediante Monte Carlo?</span></summary>
+                <p><strong>Respuesta orientativa.</strong> Sumarlos y calcular su promedio, es decir, dividir la suma entre el número de muestras.</p>
+              </details>
+            </li>
+            <li>
+              <details class="participation-question">
+                <summary><span class="question-slide">Diapositiva 9 · Convergencia</span><span class="question-text">08. ¿Cómo se llama la ley matemática que explica por qué los promedios tienden a estabilizarse cuando aumentamos las muestras?</span></summary>
+                <p><strong>Respuesta orientativa.</strong> La ley de los grandes números.</p>
+              </details>
+            </li>
+            <li>
+              <details class="participation-question">
+                <summary><span class="question-slide">Diapositiva 9 · Convergencia (extra)</span><span class="question-text">09. Según lo explicado, si cuadruplicamos la cantidad de muestras, ¿qué ocurre aproximadamente con el error estándar?</span></summary>
+                <p><strong>Respuesta orientativa.</strong> El error estándar se reduce aproximadamente a la mitad, bajo las condiciones explicadas.</p>
+              </details>
+            </li>
+            <li>
+              <details class="participation-question">
+                <summary><span class="question-slide">Diapositiva 10 · Aplicaciones</span><span class="question-text">10. Menciona una de las áreas donde se utiliza Monte Carlo y explica brevemente para qué se utiliza allí.</span></summary>
+                <p><strong>Respuesta orientativa.</strong> Por ejemplo, en medicina para simular interacciones de radiación; o en electrónica para evaluar la confiabilidad de componentes.</p>
+              </details>
+            </li>
+            <li>
+              <details class="participation-question">
+                <summary><span class="question-slide">Diapositiva 11 · Comparación de métodos</span><span class="question-text">11. ¿Cuál es la diferencia principal entre Monte Carlo y un método numérico determinístico?</span></summary>
+                <p><strong>Respuesta orientativa.</strong> El método numérico determinístico utiliza reglas o puntos establecidos; Monte Carlo utiliza muestras aleatorias.</p>
+              </details>
+            </li>
+            <li>
+              <details class="participation-question">
+                <summary><span class="question-slide">Diapositiva 12 · Características</span><span class="question-text">12. Menciona dos características principales del método de Monte Carlo que aparecieron en la presentación.</span></summary>
+                <p><strong>Respuesta orientativa.</strong> Por ejemplo: aleatoriedad, repetición, estimación estadística y flexibilidad.</p>
+              </details>
+            </li>
+            <li>
+              <details class="participation-question">
+                <summary><span class="question-slide">Diapositiva 13 · Ventajas y limitaciones</span><span class="question-text">13. Menciona una limitación del método de Monte Carlo y explica brevemente en qué consiste.</span></summary>
+                <p><strong>Respuesta orientativa.</strong> Por ejemplo, puede necesitar muchas muestras y recursos computacionales, o producir estimaciones que no son exactas.</p>
+              </details>
+            </li>
+            <li>
+              <details class="participation-question">
+                <summary><span class="question-slide">Diapositiva 14 · Cuándo utilizarlo</span><span class="question-text">14. Si un problema tiene una solución matemática exacta y sencilla de obtener, ¿sería necesario utilizar Monte Carlo? ¿Por qué?</span></summary>
+                <p><strong>Respuesta orientativa.</strong> No necesariamente. Si la solución exacta es sencilla de obtener, normalmente conviene utilizarla.</p>
+              </details>
+            </li>
+            <li>
+              <details class="participation-question">
+                <summary><span class="question-slide">Diapositiva 15 · Conclusiones</span><span class="question-text">15. ¿De qué tres factores importantes depende la calidad de una estimación mediante Monte Carlo?</span></summary>
+                <p><strong>Respuesta orientativa.</strong> Del modelo utilizado, de la calidad del muestreo y del número de repeticiones o muestras.</p>
+              </details>
+            </li>
+          </ol>
+        </article>
+      </div>
+    </section>
+
+    <section class="manual section" id="manual" aria-labelledby="manual-title">
+      <div class="wrap">
+        <div class="section-intro">
+          <div><p class="eyebrow section-kicker"><span>04</span> Manual de usuario</p><h2 id="manual-title">Cómo usar la página</h2></div>
+          <p>Empieza con la vista de π que aparece al abrir el laboratorio. Sus primeras 120 muestras usan semilla 42.</p>
+        </div>
+        <div class="manual-grid">
+          <article><span>01</span><h3>Elige y configura</h3><p>Selecciona una pestaña. Escribe N y la semilla, o elige un tamaño rápido. Cambia la distribución, suma o función según el laboratorio. Cada cambio de parámetro prepara una nueva corrida. Con la misma semilla y el mismo modelo, los tamaños distintos comparten la secuencia inicial.</p></article>
+          <article><span>02</span><h3>Controla la corrida</h3><p>«+1 muestra» permite inspeccionar cada intento. «Animar corrida» muestra el avance y se puede pausar. «Calcular todo» completa las muestras restantes de inmediato. «Reiniciar» vuelve a cero con la configuración actual. Cambiar de laboratorio pausa la corrida y conserva su avance mientras la página siga abierta.</p></article>
+          <article><span>03</span><h3>Lee los gráficos</h3><p>«Muestras» enseña puntos, evaluaciones o frecuencias. «Convergencia» compara la estimación acumulada con la referencia en un eje horizontal logarítmico. Abre la tabla de muestras recientes para ver lo que aporta cada intento.</p></article>
+          <article><span>04</span><h3>Gira, compara y explica</h3><p>En 3D arrastra el gráfico, usa los botones de giro o activa «Giro automático». Para estudiar la precisión, repite con otra semilla o usa la tabla de corridas repetidas. Reporta la referencia, la estimación y el error absoluto por separado.</p></article>
+        </div>
+        <div class="manual-end"><p>Si el internet del aula falla, abre <code>index.html</code> desde la carpeta descomprimida. Puedes navegar y simular directamente en el navegador.</p><a class="button button-primary" href="#laboratorio">Volver al laboratorio <svg class="icon" aria-hidden="true"><use href="#i-arrow"></use></svg></a></div>
+
+        <details class="sources" id="bibliografia">
+          <summary>Bibliografía científica</summary>
+          <ol>
+            <li>R. L. Harrison, “Introduction to Monte Carlo Simulation,” <i>AIP Conf. Proc.</i>, vol. 1204, pp. 17–21, 2010. <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC2924739/" target="_blank" rel="noopener">Artículo</a></li>
+            <li>N. Metropolis y S. Ulam, “The Monte Carlo Method,” <i>J. Amer. Statist. Assoc.</i>, vol. 44, no. 247, pp. 335–341, 1949. <a href="https://doi.org/10.1080/01621459.1949.10483310" target="_blank" rel="noopener">Publicación</a></li>
+            <li>M. Ehler, M. Gräf y C. J. Oates, “Optimal Monte Carlo integration on closed manifolds,” <i>Stat. Comput.</i>, vol. 29, pp. 1203–1214, 2019. <a href="https://link.springer.com/article/10.1007/s11222-019-09894-w" target="_blank" rel="noopener">Artículo</a></li>
+            <li id="ref-medicina">R. L. Harrison, “Monte Carlo Simulation of Emission Tomography and Other Medical Imaging Techniques,” <i>AIP Conf. Proc.</i>, vol. 1204, pp. 126–132, 2010. <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC2924737/" target="_blank" rel="noopener">Artículo</a></li>
+            <li id="ref-electronica">M. Novak, A. Sangwongwanich y F. Blaabjerg, “Monte Carlo-Based Reliability Estimation Methods for Power Devices in Power Electronics Systems,” <i>IEEE Open J. Power Electron.</i>, vol. 2, 2021. <a href="https://doi.org/10.1109/OJPEL.2021.3116070" target="_blank" rel="noopener">Publicación</a></li>
+            <li id="ref-senales">D. Luengo <i>et al.</i>, “A survey of Monte Carlo methods for parameter estimation,” <i>EURASIP J. Adv. Signal Process.</i>, art. 25, 2020. <a href="https://link.springer.com/article/10.1186/s13634-020-00675-6" target="_blank" rel="noopener">Artículo</a></li>
+            <li id="ref-fisica">R. Sawhney, D. Seyb, W. Jarosz y K. Crane, “Grid-Free Monte Carlo for PDEs with Spatially Varying Coefficients,” <i>ACM Trans. Graph.</i>, vol. 41, no. 4, art. 53, 2022. <a href="https://doi.org/10.1145/3528223.3530134" target="_blank" rel="noopener">Publicación</a></li>
+            <li id="ref-graficos">M. Pharr, W. Jakob y G. Humphreys, <i>Physically Based Rendering</i>, 4.ª ed., cap. 2. MIT Press, 2023. <a href="https://pbr-book.org/4ed/Monte_Carlo_Integration" target="_blank" rel="noopener">Capítulo abierto</a></li>
+            <li>T. Ludescher, T. Feilhauer y P. Brezany, “Cloud-Based Code Execution Framework for scientific problem solving environments,” <i>J. Cloud Comput.</i>, vol. 2, art. 11, 2013. <a href="https://link.springer.com/article/10.1186/2192-113X-2-11" target="_blank" rel="noopener">Artículo con el ejemplo de π</a></li>
+          </ol>
+        </details>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner"><a class="brand" href="#inicio"><span class="brand-icon"><svg class="icon" aria-hidden="true"><use href="#i-mark"></use></svg></span><span>Monte Carlo<span class="brand-lab">Lab</span></span></a><p>Simulación de sistemas · Semana 07</p><a href="#inicio">Volver al inicio ↑</a></div>
+  </footer>
+</body>
+</html>
