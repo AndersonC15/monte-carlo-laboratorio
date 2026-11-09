@@ -100,92 +100,55 @@ const MonteCharts = (() => {
     label(ctx, "y", left, top - 11);
   }
 
-  function drawDice(ctx, w, h, run) {
-    const left = w < 390 ? 42 : 55;
-    const top = 22;
-    const right = w - 15;
-    const bottom = h - 35;
+  function drawCategories(ctx, w, h, run) {
+    const hospital = run.config.mode === "hospital";
+    const money = value => "$" + new Intl.NumberFormat("es-EC", { maximumFractionDigits: 2 }).format(value);
+    const categories = hospital
+      ? [
+        ["Normal / con margen", "Carga hasta el 85 % de la capacidad", mint],
+        ["Presión de atención", "Carga mayor al 85 % y hasta el 100 %", violet],
+        ["Saturación", "Carga superior al 100 %", pale],
+      ]
+      : [
+        ["Pierdes dinero", "Capital final menor que el inicial", violet],
+        [run.config.gainThreshold === 0 ? "Sin ganancia ni pérdida" : `Ganas de $0 a ${money(run.config.gainThreshold)}`, "Incluye recuperar exactamente lo invertido", mint],
+        [`Ganas más de ${money(run.config.gainThreshold)}`, "Ganancia por encima del umbral elegido", pale],
+      ];
+    const left = w < 390 ? 22 : 34;
+    const right = w - left;
     const width = right - left;
-    const highest = run.n ? Math.max(...run.counts) / run.n : 0;
-    const tick = Math.max(.05, Math.ceil(Math.max(highest, 1 / 6) / 4 / .05) * .05);
-    const limit = tick * 4;
-    const y = value => bottom - value / limit * (bottom - top);
-    for (let i = 0; i <= 4; i += 1) {
-      line(ctx, left, y(i * tick), right, y(i * tick), grid);
-      label(ctx, `${Math.round(i * tick * 100)} %`, left - 7, y(i * tick), "right");
-    }
-    const bin = width / run.counts.length;
-    for (const [i, count] of run.counts.entries()) {
-      const sum = i + 2;
-      const barLeft = left + i * bin + bin * .15;
-      const barWidth = bin * .7;
-      const height = run.n ? bottom - y(count / run.n) : 0;
-      ctx.fillStyle = sum === run.config.target ? mint : "#a890ffac";
-      ctx.fillRect(barLeft, bottom - height, barWidth, height);
-      const expected = y(MonteCarlo.diceWays(sum) / 36);
-      ctx.setLineDash([3, 3]);
-      line(ctx, barLeft, expected, barLeft + barWidth, expected, pale, 1.45);
-      ctx.setLineDash([]);
-      label(ctx, String(sum), barLeft + barWidth / 2, bottom + 15, "center", sum === run.config.target ? mint : text);
-    }
-  }
-
-  function drawIntegral(ctx, w, h, run) {
-    const { a, b, fn } = run.config;
-    const { f } = MonteCarlo.functions[fn];
-    const left = w < 390 ? 55 : 68;
-    const right = w - 16;
-    const top = 23;
-    const bottom = h - 34;
-    const curve = Array.from({ length: 101 }, (_, i) => {
-      const x = a + (b - a) * (i / 100);
-      return [x, f(x)];
+    const top = 47;
+    const row = (h - 91) / 3;
+    const heading = w < 350
+      ? hospital ? "Días por resultado" : "Escenarios por resultado"
+      : hospital ? "Días agrupados según la carga de trabajo" : "Escenarios agrupados por ganancia anual";
+    label(ctx, heading, left, 20, "left");
+    categories.forEach(([title, description, color], index) => {
+      const y = top + index * row;
+      const count = run.counts[index];
+      const proportion = run.n ? count / run.n : 0;
+      ctx.fillStyle = color;
+      ctx.textAlign = "left";
+      ctx.textBaseline = "middle";
+      ctx.font = '600 13px system-ui, sans-serif';
+      ctx.fillText(title, left, y, width);
+      const trackY = y + 14;
+      const barHeight = Math.max(13, Math.min(23, row * .22));
+      ctx.fillStyle = "#a890ff18";
+      ctx.fillRect(left, trackY, width, barHeight);
+      ctx.fillStyle = color;
+      ctx.fillRect(left, trackY, width * proportion, barHeight);
+      const percentage = new Intl.NumberFormat("es-EC", { maximumFractionDigits: 1 }).format(proportion * 100);
+      label(ctx, run.n ? `${number.format(count)} de ${number.format(run.n)} · ${percentage} %` : "Sin simulaciones todavía", left, trackY + barHeight + 15, "left", text);
+      if (row > 80) label(ctx, description, left, trackY + barHeight + 33, "left", text);
     });
-    const ys = curve.map(point => point[1]);
-    const minY = Math.min(0, ...ys);
-    const maxY = Math.max(0, ...ys);
-    const padding = Math.max((maxY - minY) * .085, 1e-14);
-    const low = minY - padding;
-    const high = maxY + padding;
-    const px = x => left + (x - a) / (b - a) * (right - left);
-    const py = value => bottom - (value - low) / (high - low) * (bottom - top);
-    gridBox(ctx, { left, top, right, bottom }, 4);
-
-    ctx.beginPath();
-    ctx.moveTo(left, py(0));
-    for (const [x, y] of curve) ctx.lineTo(px(x), py(y));
-    ctx.lineTo(right, py(0));
-    ctx.closePath();
-    ctx.fillStyle = "#a890ff31";
-    ctx.fill();
-    line(ctx, left, py(0), right, py(0), frame, 1.2);
-    label(ctx, "0", left - 7, py(0), "right");
-    if (maxY !== 0 && Math.abs(py(maxY) - py(0)) >= 22) label(ctx, labelNumber(maxY), left - 7, py(maxY), "right");
-    if (minY !== 0 && Math.abs(py(minY) - py(0)) >= 22) label(ctx, labelNumber(minY), left - 7, py(minY), "right");
-    label(ctx, "a", left, bottom + 15);
-    label(ctx, "b", right, bottom + 15);
-    label(ctx, "x", (left + right) / 2, bottom + 15);
-
-    ctx.beginPath();
-    for (const [i, point] of curve.entries()) {
-      const [x, y] = point;
-      if (i === 0) ctx.moveTo(px(x), py(y));
-      else ctx.lineTo(px(x), py(y));
+    const axisY = h - 24;
+    for (let tick = 0; tick <= 4; tick += 1) {
+      const x = left + width * tick / 4;
+      line(ctx, x, axisY - 5, x, axisY, frame);
+      label(ctx, `${tick * 25} %`, x, axisY + 11, tick === 0 ? "left" : tick === 4 ? "right" : "center");
     }
-    ctx.strokeStyle = violet;
-    ctx.lineWidth = 2;
-    ctx.stroke();
-
-    const size = run.points.length > 140 ? 2 : 3;
-    for (const point of run.points) dot(ctx, px(point.x), py(point.value), size, mint);
-    if (run.n && run.n === run.points.length) {
-      const point = run.points.at(-1);
-      ctx.beginPath();
-      ctx.arc(px(point.x), py(point.value), size + 3.5, 0, 2 * Math.PI);
-      ctx.strokeStyle = pale;
-      ctx.lineWidth = 1.2;
-      ctx.stroke();
-    }
+    line(ctx, left, axisY - 5, right, axisY - 5, frame);
   }
 
   const cubeCorners = Array.from({ length: 8 }, (_, i) => [i & 1, (i >> 1) & 1, (i >> 2) & 1]);
@@ -265,17 +228,20 @@ const MonteCharts = (() => {
     if (run.n && history.at(-1)?.n !== run.n) {
       history.push({ n: run.n, value: run.scale * run.total / run.n });
     }
-    const values = [run.reference, ...history.map(point => point.value)];
+    const probability = ["hospital", "finance"].includes(run.config.mode);
+    const hasReference = Number.isFinite(run.reference);
+    const values = history.map(point => point.value);
+    if (hasReference) values.push(run.reference);
     if (biased) values.push(MonteCarlo.BIASED_LIMIT);
-    const min = Math.min(...values);
-    const max = Math.max(...values);
-    const padding = Math.max((max - min) * .12, Math.abs(run.reference) * .015, 1e-10);
-    const low = min - padding;
-    const high = max + padding;
+    const min = values.length ? Math.min(...values) : 0;
+    const max = values.length ? Math.max(...values) : 1;
+    const padding = Math.max((max - min) * .12, Math.abs(run.reference || 0) * .015, 1e-10);
+    const low = probability ? 0 : min - padding;
+    const high = probability ? 1 : max + padding;
     const logMax = Math.log10(Math.max(2, run.config.samples));
     const px = n => left + Math.log10(n) / logMax * (right - left);
     const py = value => bottom - (value - low) / (high - low) * (bottom - top);
-    const asLabel = run.config.mode === "dice" ? value => `${labelNumber(value * 100)} %` : labelNumber;
+    const asLabel = probability ? value => `${labelNumber(value * 100)} %` : labelNumber;
 
     for (let i = 0; i <= 4; i += 1) {
       const y = top + i * (bottom - top) / 4;
@@ -289,10 +255,11 @@ const MonteCharts = (() => {
       label(ctx, n >= 1000 ? `${n / 1000}k` : String(n), x, bottom + 13, n === 1 ? "left" : "center");
     }
     line(ctx, left, bottom, right, bottom, frame);
-    label(ctx, "Muestras · escala logarítmica", (left + right) / 2, h - 12);
+    const sampleLabel = run.config.mode === "hospital" ? "Días" : run.config.mode === "finance" ? "Escenarios" : "Muestras";
+    label(ctx, `${sampleLabel} · escala logarítmica`, (left + right) / 2, h - 12);
 
     ctx.setLineDash([5, 4]);
-    line(ctx, left, py(run.reference), right, py(run.reference), violet, 1.7);
+    if (hasReference) line(ctx, left, py(run.reference), right, py(run.reference), violet, 1.7);
     if (biased) line(ctx, left, py(MonteCarlo.BIASED_LIMIT), right, py(MonteCarlo.BIASED_LIMIT), pale, 1.2);
     ctx.setLineDash([]);
 
@@ -312,7 +279,7 @@ const MonteCharts = (() => {
     dot(ctx, px(last.n), py(last.value), 3.3, mint);
   }
 
-  const charts = { pi: drawPi, dice: drawDice, integral: drawIntegral, volume: drawVolume };
+  const charts = { pi: drawPi, hospital: drawCategories, finance: drawCategories, volume: drawVolume };
 
   function render(canvas, run, view, rotation) {
     const { width, height } = canvas.getBoundingClientRect();

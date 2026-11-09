@@ -390,3 +390,68 @@ code { font-family: var(--mono); }
   html { scroll-behavior: auto; }
   *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
 }
+
+/* Applied examples retain the original ink, mint and violet palette. */
+.scenario-options { display: grid; gap: .72rem; }
+.key-pale { border-radius: 2px; background: #e9e1fb; }
+.model-intro { padding: .1rem .1rem 1rem; }
+.model-intro h3 { margin-block: .4rem .5rem; font-size: clamp(1.2rem, 2.2vw, 1.55rem); color: var(--ink); letter-spacing: -.035em; }
+.model-intro p { font-size: .88rem; line-height: 1.55; color: var(--muted); }
+.model-intro .model-purpose { margin-top: .45rem; color: var(--mint-deep); font-weight: 630; }
+.scenario-results { margin: .6rem 0; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+.outcome-table { font-size: .79rem; font-variant-numeric: tabular-nums; }
+.outcome-table caption { padding: .5rem .65rem; text-align: left; color: var(--muted); background: var(--white); font-size: .76rem; }
+.outcome-table th { font-weight: 650; }
+.outcome-table td:nth-child(n+2), .outcome-table thead th:nth-child(n+2) { text-align: right; white-space: nowrap; }
+.outcome-table .total-row { background: #f0faf7; color: var(--mint-deep); font-weight: 750; }
+.conclusion-card { margin-top: .75rem; padding: 1rem; border: 1px solid #bce7dc; border-left: 4px solid var(--mint-deep); border-radius: 12px; background: #effaf6; }
+.conclusion-card h3 { margin-block: .4rem .55rem; color: var(--ink); font-size: 1.2rem; letter-spacing: -.025em; }
+.conclusion-card p { color: var(--text); font-size: .86rem; line-height: 1.6; }
+.conclusion-card p + p { margin-top: .6rem; }
+.conclusion-card #conclusion { font-weight: 720; }
+.conclusion-card .try-next { padding-top: .65rem; border-top: 1px solid #c9e8dd; color: var(--mint-deep); }
+.hospital-comparison { margin-block: .8rem; }
+.comparison-result:not(:empty) { margin-top: .6rem; padding: .9rem; color: var(--ink); font-size: .86rem; font-weight: 650; background: #ece5fb; border-radius: 10px; }
+.model-assumptions { margin-top: .65rem; border: 1px solid var(--line); border-radius: 9px; background: #faf9fd; }
+.model-assumptions summary { padding: .6rem .75rem; font-size: .82rem; color: var(--violet-deep); font-weight: 720; cursor: pointer; }
+.model-assumptions div { padding: 0 .75rem .8rem; font-size: .81rem; color: var(--muted); line-height: 1.65; }
+.plain-method { margin-block: 1rem; padding: clamp(1rem, 2.4vw, 1.6rem); border: 1px solid var(--line); border-radius: 15px; background: var(--white); }
+.plain-method h3 { margin-block: .5rem .7rem; font-size: clamp(1.4rem, 2.5vw, 2rem); letter-spacing: -.04em; color: var(--ink); }
+.plain-method p { color: var(--muted); font-size: .93rem; line-height: 1.7; }
+.plain-method p + p { margin-top: .65rem; }
+.teaching-examples, .history-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+.teaching-card { min-width: 0; padding: clamp(1rem, 2.5vw, 1.6rem); border: 1px solid var(--line); border-radius: 15px; background: var(--white); }
+.teaching-card h3 { margin-block: .65rem .75rem; color: var(--ink); font-size: clamp(1.3rem, 2.3vw, 1.8rem); letter-spacing: -.04em; }
+.teaching-card p { color: var(--muted); font-size: .9rem; line-height: 1.65; }
+.teaching-card p + p { margin-top: .6rem; }
+.teaching-card .button { margin-top: 1rem; }
+.demo-bars { display: grid; gap: .75rem; margin-block: 1.3rem; padding: 1.1rem; background: var(--night); border-radius: 11px; }
+.demo-bars > div { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: .25rem .7rem; color: #eee7fd; font-size: .8rem; }
+.demo-bars span { grid-column: 1; }
+.demo-bars strong { grid-column: 2; grid-row: 1; color: var(--mint); font-family: var(--mono); }
+.demo-bars i { grid-row: 2; grid-column: 1 / -1; display: block; position: relative; height: 11px; background: #ffffff12; border-radius: 4px; }
+.demo-bars i::before { content: ""; display: block; height: 100%; width: var(--bar); border-radius: inherit; background: var(--mint); }
+.demo-bars i.bar-violet::before { background: var(--violet); }
+.demo-bars i.bar-pale::before { background: #e9e1fb; }
+.history-block { margin-top: clamp(2.5rem, 5vw, 4.5rem); }
+.history-block .section-intro h3 { margin-top: .6rem; color: var(--ink); font-size: clamp(1.7rem, 3vw, 2.6rem); letter-spacing: -.045em; }
+.history-grid .theory-card { display: flex; flex-direction: column; gap: .6rem; }
+.history-grid h4 { font-size: 1.2rem; letter-spacing: -.025em; line-height: 1.3; }
+.history-grid a { margin-top: auto; padding-top: .4rem; font-size: .8rem; }
+.history-grid .theory-dark a { color: var(--mint); }
+.history-block > .field-hint { margin-top: .7rem; }
+@media (max-width: 740px) {
+  .scenario-options { grid-column: 1 / -1; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; gap: .75rem; }
+  .scenario-options > .small-tag { grid-column: 1 / -1; }
+  .scenario-options > .interval-fields { align-self: start; }
+  .teaching-examples, .history-grid { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 530px) {
+  .main-nav a { font-size: .72rem; }
+  .main-nav .nav-manual { padding-inline: .28rem; }
+  .model-intro p { font-size: .83rem; }
+  .scenario-options { grid-template-columns: minmax(0, 1fr); }
+  .conclusion-card { padding: .8rem; }
+  .outcome-table { font-size: .72rem; }
+  .outcome-table th, .outcome-table td { padding: .45rem .35rem; }
+}

@@ -3,12 +3,7 @@
 const MonteCarlo = (() => {
   const SEED_SPACE = 2 ** 32;
   const BIASED_LIMIT = 2 + Math.PI / 2;
-  const DISPLAY_LIMITS = { pi: 2400, dice: 0, integral: 450, volume: 1400 };
-  const functions = {
-    square: { label: "x²", f: x => x * x, integral: (a, b) => (b - a) * (a * a + a * b + b * b) / 3 },
-    sine: { label: "sen(x)", f: Math.sin, integral: (a, b) => 2 * Math.sin((a + b) / 2) * Math.sin((b - a) / 2) },
-    exponential: { label: "e⁻ˣ", f: x => Math.exp(-x), integral: (a, b) => -Math.exp(-a) * Math.expm1(a - b) },
-  };
+  const DISPLAY_LIMITS = { pi: 2400, hospital: 0, finance: 0, volume: 1400 };
 
   // Mulberry32 keeps the sequence reproducible without depending on Math.random().
   function seededRandom(seed) {
@@ -21,18 +16,9 @@ const MonteCarlo = (() => {
     };
   }
 
-  function fairDie(random) {
-    // Only accept the largest multiple of 6 in the 32-bit output range.
-    const range = SEED_SPACE - SEED_SPACE % 6;
-    let value;
-    do {
-      value = Math.floor(random() * SEED_SPACE);
-    } while (value >= range);
-    return value % 6 + 1;
-  }
-
-  function diceWays(sum) {
-    return 6 - Math.abs(7 - sum);
+  // A normal draw from two independent uniforms. 1-random() is always > 0.
+  function standardNormal(random) {
+    return Math.sqrt(-2 * Math.log(1 - random())) * Math.cos(2 * Math.PI * random());
   }
 
   const models = {
@@ -47,23 +33,59 @@ const MonteCarlo = (() => {
         return { x, y, evaluated, value: Number(evaluated <= 1) };
       },
     },
-    dice: {
+    hospital: {
       scale: () => 1,
-      reference: config => diceWays(config.target) / 36,
-      sample(random, config) {
-        const x = fairDie(random);
-        const y = fairDie(random);
-        const evaluated = x + y;
-        return { x, y, evaluated, value: Number(evaluated === config.target) };
+      reference: () => null,
+      prepare(config) {
+        // Symmetric inclusive integer interval, so patients is its exact mean.
+        const spread = Math.floor(config.patients * .3);
+        return {
+          low: config.patients - spread,
+          width: 2 * spread + 1,
+          capacity: config.doctors * config.hours * 60,
+        };
+      },
+      sample(random, config, parameters) {
+        const patients = parameters.low + Math.floor(random() * parameters.width);
+        let workload = 0;
+        let emergencies = 0;
+        for (let patient = 0; patient < patients; patient += 1) {
+          const emergency = random() < config.emergency / 100;
+          emergencies += Number(emergency);
+          // Ordinary care U(0.5t, 1.5t); an emergency requires three times that draw.
+          workload += config.minutes * (.5 + random()) * (emergency ? 3 : 1);
+        }
+        const capacity = parameters.capacity;
+        const utilization = workload / capacity;
+        // Teaching thresholds for workload, not a queueing or clinical prediction.
+        const category = utilization <= .85 ? 0 : utilization <= 1 ? 1 : 2;
+        return {
+          x: patients, y: workload, z: capacity,
+          patients, workload, capacity, utilization, emergencies,
+          evaluated: utilization, value: Number(category === 2), category,
+        };
       },
     },
-    integral: {
-      scale: config => config.b - config.a,
-      reference: config => functions[config.fn].integral(config.a, config.b),
-      sample(random, config) {
-        const x = config.a + (config.b - config.a) * random();
-        const value = functions[config.fn].f(x);
-        return { x, evaluated: value, value };
+    finance: {
+      scale: () => 1,
+      reference: () => null,
+      prepare(config) {
+        const meanFactor = 1 + config.annualReturn / 100;
+        const deviation = config.volatility / 100;
+        // Calibrate the lognormal to the arithmetic annual-return mean and SD.
+        const sigmaSquared = Math.log1p((deviation / meanFactor) ** 2);
+        return { mu: Math.log(meanFactor) - sigmaSquared / 2, sigma: Math.sqrt(sigmaSquared) };
+      },
+      sample(random, config, parameters) {
+        const factor = Math.exp(parameters.mu + parameters.sigma * standardNormal(random));
+        const final = config.initial * factor;
+        const profit = final - config.initial;
+        const annualReturn = profit / config.initial;
+        const category = profit < 0 ? 0 : profit <= config.gainThreshold ? 1 : 2;
+        return {
+          x: final, y: profit, final, profit, return: annualReturn,
+          evaluated: profit, value: Number(category === 0), category,
+        };
       },
     },
     volume: {
@@ -81,11 +103,19 @@ const MonteCarlo = (() => {
 
   function createRun(config) {
     const model = models[config.mode];
+    if (!model) throw new Error("Experimento desconocido.");
+    const defaults = config.mode === "hospital"
+      ? { patients: 60, doctors: 4, minutes: 25, hours: 8, emergency: 10 }
+      : config.mode === "finance"
+        ? { initial: 1000, annualReturn: 6, volatility: 20, gainThreshold: 150 }
+        : {};
+    const settings = { ...defaults, ...config };
     return {
-      config: { ...config },
-      random: seededRandom(config.seed),
-      reference: model.reference(config),
-      scale: model.scale(config),
+      config: settings,
+      parameters: model.prepare ? model.prepare(settings) : null,
+      random: seededRandom(settings.seed),
+      reference: model.reference(settings),
+      scale: model.scale(settings),
       n: 0,
       total: 0,
       mean: 0,
@@ -94,7 +124,8 @@ const MonteCarlo = (() => {
       trace: [],
       points: [],
       recent: [],
-      counts: config.mode === "dice" ? new Uint32Array(11) : null,
+      counts: ["hospital", "finance"].includes(settings.mode) ? new Uint32Array(3) : null,
+      totals: { patients: 0, workload: 0, emergencies: 0, final: 0, profit: 0, returns: 0 },
     };
   }
 
@@ -104,7 +135,7 @@ const MonteCarlo = (() => {
     const finishAt = Math.min(run.n + count, config.samples);
     const saveRecentAfter = finishAt - 6;
     for (let i = run.n + 1; i <= finishAt; i += 1) {
-      const sample = model.sample(run.random, config);
+      const sample = model.sample(run.random, config, run.parameters);
       run.n = i;
       run.total += sample.value;
 
@@ -117,19 +148,20 @@ const MonteCarlo = (() => {
         run.trace.push({ n: i, value: run.scale * (run.total / i) });
         run.nextTrace = i < 32 ? i + 1 : Math.ceil(i * 1.045);
       }
-      if (i <= DISPLAY_LIMITS[config.mode]) {
-        run.points.push(sample);
+      if (i <= DISPLAY_LIMITS[config.mode]) run.points.push(sample);
+      if (run.counts) run.counts[sample.category] += 1;
+      if (config.mode === "hospital") {
+        run.totals.patients += sample.patients;
+        run.totals.workload += sample.workload;
+        run.totals.emergencies += sample.emergencies;
+      } else if (config.mode === "finance") {
+        run.totals.final += sample.final;
+        run.totals.profit += sample.profit;
+        run.totals.returns += sample.return;
       }
-      if (run.counts) {
-        run.counts[sample.evaluated - 2] += 1;
-      }
-      if (i > saveRecentAfter) {
-        run.recent.push({ ...sample, index: i });
-      }
+      if (i > saveRecentAfter) run.recent.push({ ...sample, index: i });
     }
-    if (run.recent.length > 6) {
-      run.recent.splice(0, run.recent.length - 6);
-    }
+    if (run.recent.length > 6) run.recent.splice(0, run.recent.length - 6);
   }
 
   function statistics(run) {
@@ -137,9 +169,38 @@ const MonteCarlo = (() => {
     const estimate = n ? scale * (total / n) : null;
     return {
       estimate,
-      error: n ? Math.abs(estimate - reference) : null,
+      error: n && reference !== null ? Math.abs(estimate - reference) : null,
       standardError: n > 1 ? scale * Math.sqrt(Math.max(0, m2) / (n - 1) / n) : null,
     };
+  }
+
+  function applicationStatistics(run) {
+    const { config, n, totals } = run;
+    const common = {
+      counts: run.counts ? Array.from(run.counts) : [],
+      proportions: run.counts ? Array.from(run.counts, count => n ? count / n : 0) : [],
+    };
+    if (config.mode === "hospital") {
+      const capacity = run.parameters.capacity;
+      return {
+        ...common, capacity,
+        averagePatients: n ? totals.patients / n : null,
+        averageWorkload: n ? totals.workload / n : null,
+        averageUtilization: n ? totals.workload / n / capacity : null,
+        averageEmergencies: n ? totals.emergencies / n : null,
+      };
+    }
+    if (config.mode === "finance") {
+      return {
+        ...common,
+        averageFinal: n ? totals.final / n : null,
+        averageProfit: n ? totals.profit / n : null,
+        averageReturn: n ? totals.returns / n : null,
+        lossFraction: n ? run.counts[0] / n : null,
+        modelExpectedFinal: config.initial * (1 + config.annualReturn / 100),
+      };
+    }
+    return common;
   }
 
   function repeatedPi(repeats) {
@@ -168,5 +229,5 @@ const MonteCarlo = (() => {
     }));
   }
 
-  return { BIASED_LIMIT, functions, diceWays, createRun, advance, statistics, repeatedPi };
+  return { BIASED_LIMIT, createRun, advance, statistics, applicationStatistics, repeatedPi };
 })();

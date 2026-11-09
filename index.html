@@ -4,8 +4,8 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#151329">
-  <meta name="description" content="Laboratorio interactivo del método Monte Carlo. Estima π, probabilidades, integrales y volúmenes con muestras aleatorias.">
-  <title>Monte Carlo Lab | El azar para estimar lo que es fijo</title>
+  <meta name="description" content="Laboratorio interactivo del método Monte Carlo. Aprende Monte Carlo con π, volumen 3D, un hospital y una inversión: modifica datos, simula y explica los resultados.">
+  <title>Monte Carlo Lab | Del azar a una decisión</title>
   <link rel="icon" href="./assets/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="./assets/styles.css">
   <script src="./assets/simulation.js" defer></script>
@@ -22,9 +22,7 @@
     <symbol id="i-pause" viewBox="0 0 24 24"><path d="M9 5v14m6-14v14" stroke-width="2.7"/></symbol>
     <symbol id="i-reset" viewBox="0 0 24 24"><path d="M5 5v5h5m-5 0a8 8 0 1 1 .8 6.5"/></symbol>
     <symbol id="i-shuffle" viewBox="0 0 24 24"><path d="M3 6h3c5 0 7 12 12 12h3m-4-4 4 4-4 4M3 18h3c1.4 0 2.5-.9 3.6-2.4M14 8.4c1.2-1.5 2.4-2.4 4-2.4h3m-4-4 4 4-4 4"/></symbol>
-    <symbol id="i-dice" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="4"/><path d="M8.5 8.5h.01m7 0h.01m-3.5 3.5h.01m-3.5 3.5h.01m7 0h.01" stroke-width="2.6"/></symbol>
     <symbol id="i-cube" viewBox="0 0 24 24"><path d="m12 3 8 4.5v9L12 21l-8-4.5v-9L12 3Zm0 9 8-4.5M12 12 4 7.5m8 4.5v9"/></symbol>
-    <symbol id="i-curve" viewBox="0 0 24 24"><path d="M4 4v16h16M7 16c4-.4 7-3 11-10"/></symbol>
     <symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/></symbol>
     <symbol id="i-grid" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M4 12h16M12 4v16"/></symbol>
     <symbol id="i-chevron" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></symbol>
@@ -40,7 +38,7 @@
       <nav class="main-nav" aria-label="Navegación principal">
         <a href="#laboratorio">Laboratorio</a>
         <a href="#metodo">Método</a>
-        <a href="#preguntas">Preguntas</a>
+        <a href="#historia">Historia</a><a href="#preguntas">Preguntas</a>
         <a class="nav-manual" href="#manual"><svg class="icon" aria-hidden="true"><use href="#i-book"></use></svg> Manual</a>
       </nav>
     </div>
@@ -51,8 +49,8 @@
       <div class="wrap hero-grid">
         <div class="hero-content">
           <p class="eyebrow hero-kicker"><span class="signal"></span> Simulación de sistemas <span class="kicker-divider"></span> Semana 07</p>
-          <h1 id="titulo">El azar para estimar <em>lo que es fijo.</em></h1>
-          <p class="hero-intro">Descubre el método de Monte Carlo lanzando puntos, tirando dados y cambiando las reglas del muestreo. Observa cómo muchos intentos se convierten en una estimación.</p>
+          <h1 id="titulo">Muchos intentos.<em>Una mejor idea.</em></h1>
+          <p class="hero-intro">Aprende Monte Carlo desde cero: genera puntos, simula días de un hospital y explora qué podría pasar con $1.000. Cambia los datos y descubre cómo muchos intentos ayudan a estimar y decidir.</p>
           <div class="hero-actions">
             <a class="button button-mint" href="#laboratorio">Abrir el laboratorio <svg class="icon" aria-hidden="true"><use href="#i-arrow"></use></svg></a>
             <a class="button button-glass" href="#metodo">Entender el método</a>
@@ -77,15 +75,15 @@
     <section class="section lab-section wrap" id="laboratorio" aria-labelledby="lab-title">
       <div class="section-intro">
         <div><p class="eyebrow section-kicker"><span>01</span> Experimentos</p><h2 id="lab-title">Laboratorio interactivo</h2></div>
-        <p>Elige un problema, genera muestras y compara la estimación con un valor de referencia.</p>
+        <p>Cuatro problemas, un mismo método: generar al azar, repetir y resumir. Cada ejemplo explica qué se simula y para qué sirve.</p>
       </div>
       <noscript><p class="notice">Activa JavaScript para ejecutar las simulaciones. Puedes seguir leyendo el método y las preguntas de participación.</p></noscript>
       <div class="lab-shell">
         <div class="lab-tabs" role="tablist" aria-label="Experimentos">
           <button type="button" id="tab-pi" role="tab" aria-selected="true" aria-controls="experiment-panel" data-model="pi"><span class="tab-icon pi-icon" aria-hidden="true">π</span><span><strong>Estimar π</strong><small>Cuarto de círculo</small></span></button>
-          <button type="button" id="tab-dice" role="tab" aria-selected="false" aria-controls="experiment-panel" tabindex="-1" data-model="dice"><span class="tab-icon"><svg class="icon" aria-hidden="true"><use href="#i-dice"></use></svg></span><span><strong>Dos dados</strong><small>Probabilidad</small></span></button>
-          <button type="button" id="tab-integral" role="tab" aria-selected="false" aria-controls="experiment-panel" tabindex="-1" data-model="integral"><span class="tab-icon"><svg class="icon" aria-hidden="true"><use href="#i-curve"></use></svg></span><span><strong>Integrar</strong><small>Promedio de f(x)</small></span></button>
-          <button type="button" id="tab-volume" role="tab" aria-selected="false" aria-controls="experiment-panel" tabindex="-1" data-model="volume"><span class="tab-icon"><svg class="icon" aria-hidden="true"><use href="#i-cube"></use></svg></span><span><strong>Volumen 3D</strong><small>Octante de esfera</small></span></button>
+          <button type="button" id="tab-volume" role="tab" aria-selected="false" aria-controls="experiment-panel" tabindex="-1" data-model="volume"><span class="tab-icon"><svg class="icon" aria-hidden="true"><use href="#i-cube"></use></svg></span><span><strong>Volumen 3D</strong><small>Una esfera en 8 partes</small></span></button>
+          <button type="button" id="tab-hospital" role="tab" aria-selected="false" aria-controls="experiment-panel" tabindex="-1" data-model="hospital"><span class="tab-icon" aria-hidden="true">✚</span><span><strong>Un hospital</strong><small>Pacientes y capacidad</small></span></button>
+          <button type="button" id="tab-finance" role="tab" aria-selected="false" aria-controls="experiment-panel" tabindex="-1" data-model="finance"><span class="tab-icon" aria-hidden="true">$</span><span><strong>Una inversión</strong><small>Escenarios a un año</small></span></button>
         </div>
 
         <div id="experiment-panel" role="tabpanel" aria-labelledby="tab-pi" class="experiment-panel">
@@ -101,7 +99,7 @@
                 <button type="button" data-size="10000" aria-pressed="false">10 mil</button>
                 <button type="button" data-size="100000" aria-pressed="false">100 mil</button>
               </div>
-              <small class="field-hint" id="samples-hint">Entre 1 y 100.000 por corrida.</small>
+              <small class="field-hint" id="samples-hint">N es el total de intentos: puntos, días o escenarios. Entre 1 y 100.000.</small>
             </div>
 
             <div class="control-group">
@@ -121,25 +119,22 @@
               </select>
             </div>
 
-            <div class="control-group" id="dice-options" hidden>
-              <label for="dice-target">Suma objetivo</label>
-              <input id="dice-target" name="dice-target" type="number" min="2" max="12" step="1" value="7" required disabled>
-            </div>
-
-            <div class="integral-options" id="integral-options" hidden>
-              <div class="control-group">
-                <label for="function">Función f(x)</label>
-                <select id="function" name="function" disabled>
-                  <option value="square">x²</option>
-                  <option value="sine">sen(x)</option>
-                  <option value="exponential">e⁻ˣ</option>
-                </select>
-              </div>
+            <div class="scenario-options" id="hospital-options" hidden>
+              <p class="small-tag">Datos del hospital</p>
+              <div class="control-group"><label for="hospital-patients">Pacientes por día · promedio</label><input id="hospital-patients" type="number" min="1" max="300" step="1" value="60" required disabled><small class="field-hint">Las llegadas varían cada día alrededor de este valor.</small></div>
               <div class="interval-fields">
-                <div class="control-group"><label for="lower">Límite a</label><input id="lower" name="lower" type="number" min="-5" max="5" step="0.000001" value="0" required disabled></div>
-                <div class="control-group"><label for="upper">Límite b</label><input id="upper" name="upper" type="number" min="-5" max="5" step="0.000001" value="1" required disabled></div>
+                <div class="control-group"><label for="hospital-doctors">Médicos</label><input id="hospital-doctors" type="number" min="1" max="50" step="1" value="4" required disabled></div>
+                <div class="control-group"><label for="hospital-hours">Horas por médico</label><input id="hospital-hours" type="number" min="1" max="24" step="1" value="8" required disabled></div>
               </div>
-              <small class="field-hint">Elige −5 ≤ a &lt; b ≤ 5, con hasta seis decimales. Los ángulos están en radianes.</small>
+              <div class="control-group"><label for="hospital-minutes">Consulta ordinaria · minutos promedio</label><input id="hospital-minutes" type="number" min="1" max="120" step="1" value="25" required disabled></div>
+              <div class="control-group"><label for="hospital-emergency">Probabilidad de emergencia (%)</label><input id="hospital-emergency" type="number" min="0" max="100" step="1" value="10" required disabled><small class="field-hint">En este modelo, una emergencia requiere 3 veces el tiempo de una consulta ordinaria.</small></div>
+            </div>
+            <div class="scenario-options" id="finance-options" hidden>
+              <p class="small-tag">Supuestos de la inversión</p>
+              <div class="control-group"><label for="finance-initial">Dinero inicial ($)</label><input id="finance-initial" type="number" min="0.01" max="10000000" step="0.01" value="1000" required disabled></div>
+              <div class="control-group"><label for="finance-return">Rendimiento anual medio supuesto (%)</label><input id="finance-return" type="number" min="-95" max="100" step="0.1" value="6" required disabled><small class="field-hint">Promedio del modelo; un año puede ganar o perder.</small></div>
+              <div class="control-group"><label for="finance-volatility">Variación anual · desviación estándar (%)</label><input id="finance-volatility" type="number" min="0" max="150" step="0.1" value="20" required disabled><small class="field-hint">20 significa una desviación de 20 puntos porcentuales del rendimiento. Mayor variación permite resultados más dispersos; con 0, todos son iguales.</small></div>
+              <div class="control-group"><label for="finance-threshold">Umbral de ganancia para comparar ($)</label><input id="finance-threshold" type="number" min="0" max="10000000" step="0.01" value="150" required disabled></div>
             </div>
 
             <div class="control-group speed-field">
@@ -161,6 +156,7 @@
           </form>
 
           <div class="results">
+            <div class="model-intro"><span class="small-tag" id="model-tag">Entender antes de simular</span><h3 id="model-story-title">Como calcular el área de un lago</h3><p id="model-analogy"></p><p class="model-purpose" id="model-purpose"></p></div>
             <div class="result-top">
               <div class="view-switch" role="group" aria-label="Vista del gráfico">
                 <button type="button" id="show-samples" aria-pressed="true">Muestras</button>
@@ -185,15 +181,21 @@
             </div>
             <p class="plot-note" id="plot-note">Cada punto se evalúa con la regla x² + y² ≤ 1.</p>
             <dl class="metrics">
-              <div class="metric metric-main"><dt>Estimación</dt><dd id="estimate">—</dd></div>
-              <div class="metric"><dt>Referencia</dt><dd id="reference">3,141593</dd></div>
-              <div class="metric"><dt>Error absoluto</dt><dd id="error">—</dd></div>
-              <div class="metric"><dt>Error estándar est.</dt><dd id="standard-error">—</dd></div>
+              <div class="metric metric-main"><dt id="estimate-label">Estimación</dt><dd id="estimate">—</dd></div>
+              <div class="metric"><dt id="reference-label">Referencia</dt><dd id="reference">3,141593</dd></div>
+              <div class="metric"><dt id="error-label">Error absoluto</dt><dd id="error">—</dd></div>
+              <div class="metric"><dt id="standard-error-label">Error estándar est.</dt><dd id="standard-error">—</dd></div>
             </dl>
+            <div class="scenario-results" id="scenario-results" hidden>
+              <div class="table-wrap"><table class="outcome-table"><caption id="outcome-caption">Resultados de los escenarios simulados</caption><thead><tr><th scope="col">Resultado</th><th scope="col">Casos</th><th scope="col">Porcentaje</th></tr></thead><tbody id="outcome-rows"></tbody></table></div>
+            </div>
             <div class="calculation">
-              <div><span class="small-tag">Cálculo de la corrida</span><p class="equation" id="live-formula">π̂ = 4 × C / N</p></div>
+              <div><span class="small-tag">Cómo se obtiene el resultado</span><p class="equation" id="live-formula">π̂ = 4 × C / N</p></div>
               <p id="live-explanation">C cuenta los puntos que cumplen x² + y² ≤ 1.</p>
             </div>
+            <article class="conclusion-card" aria-labelledby="conclusion-title"><span class="small-tag">Lo que nos dice Monte Carlo</span><h3 id="conclusion-title">Conclusión de esta corrida</h3><p id="conclusion"></p><p id="conclusion-why"></p><p class="try-next" id="try-next"></p></article>
+            <div id="hospital-comparison" class="hospital-comparison" hidden><button type="button" class="button button-secondary" id="compare-staff">Comparar con 1 médico más</button><p class="field-hint">Mismos días y misma semilla; solo cambia la capacidad de atención.</p><p id="comparison-result" class="comparison-result" role="status"></p></div>
+            <details class="model-assumptions" id="model-assumptions"><summary>¿Qué reglas usa este ejemplo?</summary><div id="assumption-copy"></div></details>
             <details class="sample-details" id="sample-details">
               <summary>Inspeccionar las últimas muestras</summary>
               <p class="field-hint">La tabla redondea los números. La evaluación usa los valores originales.</p>
@@ -203,7 +205,7 @@
           </div>
         </div>
       </div>
-      <div class="lab-tip"><svg class="icon" aria-hidden="true"><use href="#i-target"></use></svg><p><strong>Prueba de un minuto.</strong> En π, compara 100 y 10.000 muestras con semilla 42. Después conserva 10.000 y cambia la semilla. Explica qué cambió y qué valor se mantiene fijo.</p></div>
+      <div class="lab-tip"><svg class="icon" aria-hidden="true"><use href="#i-target"></use></svg><p><strong>Guion para exponer.</strong> 1. Explica qué queremos saber. 2. Identifica qué cambia al azar. 3. Simula 10.000 intentos. 4. Lee las barras y la conclusión. 5. Cambia un dato y explica por qué cambia el resultado.</p></div>
     </section>
 
     <section class="method section" id="metodo" aria-labelledby="method-title">
@@ -219,20 +221,15 @@
           <li><span>04</span><h3>Resume</h3><p>Promedia las evaluaciones y aplica el factor de escala del problema cuando corresponda.</p></li>
         </ol>
 
-        <div class="theory-grid">
-          <article class="theory-card theory-dark">
-            <span class="small-tag">Modelo matemático</span>
-            <h3>El promedio estima una esperanza</h3>
-            <p class="equation equation-large" aria-label="Mu estimada es igual a uno sobre N por la suma de g de X sub i">μ̂<sub>N</sub> = (1/N) ∑ g(X<sub>i</sub>)</p>
-            <p>El objetivo es μ = E[g(X)], el promedio que predice el modelo. X<sub>i</sub> es una muestra y g(X<sub>i</sub>) es el valor que aporta. Con muestras independientes de la misma distribución y esperanza finita, la ley de los grandes números hace que el promedio se acerque a μ al crecer N.</p>
-          </article>
-          <article class="theory-card">
-            <span class="small-tag">El ejemplo de las diapositivas 2–7</span>
-            <h3>¿De dónde sale el 4?</h3>
-            <p>El cuadrado de lado 1 tiene área 1. El cuarto de círculo de radio 1 tiene área π/4. Con puntos uniformes, su probabilidad de impacto es π/4, que aproximamos con C/N.</p>
-            <p class="equation equation-large">π̂ = 4 × C / N</p>
-            <p>Ejemplo ilustrativo. Si 785 de 1.000 puntos caen dentro, 4 × 785/1.000 da 3,14. El número π es fijo y el conteo C puede variar de una corrida a otra.</p>
-          </article>
+        <div class="plain-method">
+          <span class="small-tag">La idea, sin fórmulas complicadas</span>
+          <h3>Ensayar muchas posibilidades para estimar una respuesta</h3>
+          <p>Imagina un lago irregular dentro de un rectángulo. Si el 73 % de muchos puntos uniformes cae en el lago, estimamos que ocupa el 73 % del área del rectángulo. En el hospital contamos días con sobrecarga; en la inversión, escenarios con pérdidas. Cambia la pregunta, pero conservamos el mismo método.</p>
+          <p><strong>Probabilidad estimada = casos que nos interesan ÷ total de intentos.</strong> Para expresarla como porcentaje, multiplicamos por 100. N es el número total de intentos; la semilla permite repetir la secuencia.</p>
+        </div>
+        <div class="teaching-examples">
+          <article class="teaching-card"><span class="small-tag">Ejemplo de lectura · cifras ilustrativas</span><h3>🏥 ¿Cómo leer 10.000 días de hospital?</h3><p>Supongamos que 6.000 días tienen margen de capacidad, 3.000 muestran presión y 1.000 superan la capacidad.</p><div class="demo-bars" role="img" aria-label="Ejemplo hipotético: 60 por ciento normal, 30 por ciento presión, 10 por ciento saturación"><div><span>Normal</span><i style="--bar:60%;"></i><strong>60 %</strong></div><div><span>Presión / posibles esperas</span><i class="bar-violet" style="--bar:30%;"></i><strong>30 %</strong></div><div><span>Saturación</span><i class="bar-pale" style="--bar:10%;"></i><strong>10 %</strong></div></div><p><strong>Conclusión:</strong> en este ejemplo hay sobrecarga en 1 de cada 10 días simulados. Comparar la misma demanda con más médicos permite estudiar si hace falta reforzar la atención.</p><p class="field-hint">Estos conteos enseñan a leer un resultado. El laboratorio calcula sus propios porcentajes según tus datos; no está programado para repetir 60/30/10.</p><a class="button button-secondary" href="#laboratorio" data-open-model="hospital">Simular el hospital</a></article>
+          <article class="teaching-card"><span class="small-tag">Ejemplo de lectura · cifras ilustrativas</span><h3>💰 ¿Qué podría pasar con $1.000?</h3><p>Supongamos que, al cabo de un año, 3.000 escenarios pierden dinero, 4.500 quedan entre $0 y $150 de ganancia (incluye quedar igual) y 2.500 ganan más de $150.</p><div class="demo-bars" role="img" aria-label="Ejemplo hipotético: 30 por ciento pierde, 45 por ciento gana de cero a ciento cincuenta dólares y 25 por ciento gana más"><div><span>Pérdida</span><i class="bar-violet" style="--bar:30%;"></i><strong>30 %</strong></div><div><span>Ganancia de $0 a $150</span><i style="--bar:45%;"></i><strong>45 %</strong></div><div><span>Ganancia mayor a $150</span><i class="bar-pale" style="--bar:25%;"></i><strong>25 %</strong></div></div><p><strong>Conclusión:</strong> la categoría más frecuente es ganar de $0 a $150, pero también hay pérdidas. Monte Carlo muestra posibilidades y su frecuencia dentro del modelo; no asegura una ganancia.</p><p class="field-hint">Cifras hipotéticas para explicar. El modelo interactivo no usa cotizaciones reales ni predice rentabilidad; excluye comisiones, impuestos e inflación.</p><a class="button button-secondary" href="#laboratorio" data-open-model="finance">Simular la inversión</a></article>
         </div>
         <details class="code-details">
           <summary>¿Qué hace la semilla?</summary>
@@ -245,7 +242,7 @@
             <h3>Más muestras, menos dispersión</h3>
             <p>Para el promedio de muestras independientes con varianza finita, el error estándar es σ/√N. Multiplicar N por cuatro reduce a la mitad esa escala de variación. El error absoluto de una corrida puede subir o bajar al agregar muestras.</p>
             <dl class="definition-list">
-              <div><dt>Error absoluto</dt><dd>|estimación − referencia|. Solo se puede calcular aquí porque conocemos la referencia.</dd></div>
+              <div><dt>Error absoluto</dt><dd>|estimación − referencia|. Lo mostramos en π y volumen porque conocemos sus referencias. En hospital e inversión no conocemos el resultado real futuro.</dd></div>
               <div><dt>Error estándar estimado</dt><dd>s/√N, con s igual a la desviación muestral de los aportes, incluida la escala. Con una sola muestra queda sin estimar. Si los aportes observados son idénticos, s vale cero en esa corrida.</dd></div>
               <div><dt>Sesgo</dt><dd>Una diferencia sistemática frente al objetivo. Con un muestreo inadecuado, la estimación puede estabilizarse cerca de un valor equivocado.</dd></div>
             </dl>
@@ -259,17 +256,7 @@
           </div>
         </div>
 
-        <div class="compare-block" id="comparacion">
-          <div><span class="small-tag">Tres formas de resolver lo mismo</span><h3>¿Cuándo conviene Monte Carlo?</h3><p>Para una integral sencilla como ∫<sub>0</sub><sup>1</sup> x² dx, la solución analítica es directa. Monte Carlo resulta útil cuando podemos muestrear y evaluar el modelo, pero resolverlo con una fórmula o una cuadrícula es difícil.</p></div>
-          <div class="table-wrap"><table class="method-table"><caption class="sr-only">Tres métodos para integrar x al cuadrado entre cero y uno</caption><thead><tr><th scope="col">Método</th><th scope="col">Cómo se obtiene</th><th scope="col">Resultado</th></tr></thead>
-            <tbody>
-              <tr><th scope="row">Analítico</th><td>Primitiva x³/3 entre 0 y 1.</td><td>1/3, exacto</td></tr>
-              <tr><th scope="row">Numérico determinístico</th><td>Cuatro trapecios con puntos equidistantes.</td><td>0,34375</td></tr>
-              <tr><th scope="row">Monte Carlo</th><td>Promedio de x² para cuatro x ilustrativos (0,10 · 0,30 · 0,60 · 0,90).</td><td>0,31750</td></tr>
-            </tbody>
-          </table></div>
-          <p class="compare-note">Ventajas y costos. El muestreo es flexible y puede ayudar en alta dimensión. Una precisión exigente puede requerir muchas evaluaciones, y el resultado depende del modelo y de cómo se generan las muestras.</p>
-        </div>
+        <div class="plain-method" id="comparacion"><h3>¿Cuándo sirve y cuándo conviene otra opción?</h3><p>Monte Carlo es útil cuando podemos simular un caso, pero estudiar todas las combinaciones o resolver una fórmula exacta resulta difícil. Si ya existe una fórmula sencilla, suele ser mejor usarla: aquí conocemos π y el volumen de la esfera para comprobar el método. En el hospital y la inversión no conocemos el futuro; obtenemos estimaciones condicionadas a nuestros supuestos.</p><p><strong>Más muestras reducen la variación por azar; no corrigen datos malos ni un modelo equivocado.</strong> Una simulación puede estabilizarse y seguir equivocada si sus reglas representan mal el problema.</p></div>
 
         <div class="applications">
           <h3>¿Dónde se usa?</h3>
@@ -281,6 +268,40 @@
             <li><strong>Gráficos 3D</strong><span>Muestrear contribuciones de luz para estimar el color de los píxeles.</span><a href="#ref-graficos">[8]</a></li>
           </ul>
         </div>
+
+        <section class="history-block" id="historia" aria-labelledby="history-title">
+          <div class="section-intro">
+            <div><p class="eyebrow section-kicker"><span>↶</span> Un poco de historia</p><h3 id="history-title">Una idea de 1946 que creció con las computadoras</h3></div>
+            <p>El muestreo estadístico ya existía. En Los Álamos se desarrolló su forma moderna para resolver problemas mediante muchos ensayos aleatorios.</p>
+          </div>
+          <div class="history-grid">
+            <article class="theory-card">
+              <span class="small-tag">1946 · La idea</span>
+              <h4>Contar partidas en vez de resolverlas todas</h4>
+              <p>Stanislaw Ulam, mientras jugaba al solitario durante una convalecencia, pensó en estimar la probabilidad de ganar repitiendo muchas partidas. Desarrolló la idea con John von Neumann para aplicarla a problemas científicos.</p>
+              <a href="https://mcnp.lanl.gov/pdf_files/TechReport_2023_LANL_LA-UR-23-27907_JoseySood.pdf" target="_blank" rel="noopener noreferrer">Fuente: Los Alamos National Laboratory ↗</a>
+            </article>
+            <article class="theory-card">
+              <span class="small-tag">1948 · ENIAC</span>
+              <h4>La computadora permite repetir miles de ensayos</h4>
+              <p>Las primeras simulaciones de Monte Carlo en ENIAC se ejecutaron en abril y mayo de 1948 para estudiar el transporte de neutrones. Klara von Neumann y Nicholas Metropolis participaron en la programación. La computadora permitía repetir cálculos que habrían sido muy laboriosos a mano.</p>
+              <a href="https://doi.org/10.1080/00295450.2021.1956255" target="_blank" rel="noopener noreferrer">Fuente: investigadores de Los Álamos ↗</a>
+            </article>
+            <article class="theory-card">
+              <span class="small-tag">1949 · La publicación</span>
+              <h4>El método se presenta públicamente</h4>
+              <p>Nicholas Metropolis y Stanislaw Ulam publicaron «The Monte Carlo Method» en la revista de la Asociación Estadounidense de Estadística. Ulam, von Neumann, Metropolis y sus colaboradores fueron figuras centrales de este desarrollo.</p>
+              <a href="https://doi.org/10.1080/01621459.1949.10483310" target="_blank" rel="noopener noreferrer">Leer la publicación original ↗</a>
+            </article>
+            <article class="theory-card theory-dark">
+              <span class="small-tag">El nombre</span>
+              <h4>¿Por qué «Monte Carlo»?</h4>
+              <p>Metropolis propuso el nombre en alusión a Montecarlo, conocido por sus juegos de azar. La conexión es el uso del azar para calcular: el método convierte muchos resultados aleatorios en una estimación útil.</p>
+              <a href="https://mcnp.lanl.gov/pdf_files/Article_1987_LAS_Metropolis_125--130.pdf" target="_blank" rel="noopener noreferrer">Relato de Nicholas Metropolis ↗</a>
+            </article>
+          </div>
+          <p class="field-hint">Para recordar las fechas: idea moderna en 1946, primeras simulaciones de Monte Carlo en ENIAC en 1948 y publicación en 1949.</p>
+        </section>
 
         <details class="code-details" id="python">
           <summary><span>Del simulador a Python</span><small>Ejemplo reproducible</small></summary>
@@ -334,18 +355,18 @@ for n in range(1, max(tamanos) + 1):
               <label><input name="q3" type="radio" value="c"> La estimación tiende al objetivo del modelo sesgado.</label>
               <p class="quiz-feedback" hidden></p>
             </fieldset>
-            <fieldset data-correct="b" data-explanation="Hay 36 parejas ordenadas equiprobables. Seis de ellas suman 7, así que P(suma = 7) = 6/36 = 1/6.">
-              <legend>4. ¿Cuál es la probabilidad de sumar 7 con dos dados justos e independientes?</legend>
-              <label><input name="q4" type="radio" value="a" required> 1/11</label>
-              <label><input name="q4" type="radio" value="b"> 6/36</label>
-              <label><input name="q4" type="radio" value="c"> 7/36</label>
+            <fieldset data-correct="b" data-explanation="La saturación se estima dividiendo los días con sobrecarga entre todos los días simulados: 1000/10000 = 10 %. Es una estimación del modelo.">
+              <legend>4. Si un hospital se satura en 1.000 de 10.000 días simulados, ¿qué estimamos?</legend>
+              <label><input name="q4" type="radio" value="a" required> Que se saturará exactamente cada diez días.</label>
+              <label><input name="q4" type="radio" value="b"> Una probabilidad de saturación del 10 % según el modelo.</label>
+              <label><input name="q4" type="radio" value="c"> Que el método tiene un 10 % de precisión.</label>
               <p class="quiz-feedback" hidden></p>
             </fieldset>
-            <fieldset data-correct="a" data-explanation="Cuando X es uniforme en [a, b], su densidad es 1/(b−a). Multiplicar el promedio por b−a recupera la escala de la integral.">
-              <legend>5. Para estimar una integral en [a, b], ¿por qué se multiplica el promedio de f(X) por b−a?</legend>
-              <label><input name="q5" type="radio" value="a" required> Para ajustar el promedio a la longitud del intervalo.</label>
-              <label><input name="q5" type="radio" value="b"> Para cambiar la semilla.</label>
-              <label><input name="q5" type="radio" value="c"> Para contar solo las muestras positivas.</label>
+            <fieldset data-correct="c" data-explanation="La categoría más frecuente resume estas simulaciones; no garantiza un resultado futuro. Las probabilidades dependen de los datos y supuestos del modelo.">
+              <legend>5. Si ganar de $0 a $150 es la categoría más frecuente de una inversión simulada, ¿qué significa?</legend>
+              <label><input name="q5" type="radio" value="a" required> Que esa ganancia está asegurada.</label>
+              <label><input name="q5" type="radio" value="b"> Que ya no existe riesgo de perder.</label>
+              <label><input name="q5" type="radio" value="c"> Que fue la categoría más frecuente dentro del modelo.</label>
               <p class="quiz-feedback" hidden></p>
             </fieldset>
             <div class="quiz-actions"><button class="button button-primary" type="submit">Revisar respuestas</button><button class="button button-secondary" type="reset">Volver a intentar</button><p id="quiz-score" role="status"></p></div>
@@ -459,10 +480,10 @@ for n in range(1, max(tamanos) + 1):
           <p>Empieza con la vista de π que aparece al abrir el laboratorio. Sus primeras 120 muestras usan semilla 42.</p>
         </div>
         <div class="manual-grid">
-          <article><span>01</span><h3>Elige y configura</h3><p>Selecciona una pestaña. Escribe N y la semilla, o elige un tamaño rápido. Cambia la distribución, suma o función según el laboratorio. Cada cambio de parámetro prepara una nueva corrida. Con la misma semilla y el mismo modelo, los tamaños distintos comparten la secuencia inicial.</p></article>
+          <article><span>01</span><h3>Elige y configura</h3><p>Selecciona una pestaña. Escribe N y la semilla, o elige un tamaño rápido. Cambia la distribución de puntos, los recursos del hospital o los supuestos de la inversión según el laboratorio. Cada cambio de parámetro prepara una nueva corrida. Con la misma semilla y el mismo modelo, los tamaños distintos comparten la secuencia inicial.</p></article>
           <article><span>02</span><h3>Controla la corrida</h3><p>«+1 muestra» permite inspeccionar cada intento. «Animar corrida» muestra el avance y se puede pausar. «Calcular todo» completa las muestras restantes de inmediato. «Reiniciar» vuelve a cero con la configuración actual. Cambiar de laboratorio pausa la corrida y conserva su avance mientras la página siga abierta.</p></article>
-          <article><span>03</span><h3>Lee los gráficos</h3><p>«Muestras» enseña puntos, evaluaciones o frecuencias. «Convergencia» compara la estimación acumulada con la referencia en un eje horizontal logarítmico. Abre la tabla de muestras recientes para ver lo que aporta cada intento.</p></article>
-          <article><span>04</span><h3>Gira, compara y explica</h3><p>En 3D arrastra el gráfico, usa los botones de giro o activa «Giro automático». Para estudiar la precisión, repite con otra semilla o usa la tabla de corridas repetidas. Reporta la referencia, la estimación y el error absoluto por separado.</p></article>
+          <article><span>03</span><h3>Lee los gráficos</h3><p>«Muestras» enseña puntos o barras con los resultados. «Convergencia» muestra cómo cambia la estimación al acumular intentos; en π y volumen incluye una referencia conocida, y en hospital e inversión sigue la probabilidad estimada de saturación o pérdida. Abre la tabla de muestras recientes para ver lo que aporta cada intento.</p></article>
+          <article><span>04</span><h3>Gira, compara y explica</h3><p>En 3D arrastra el gráfico, usa los botones de giro o activa «Giro automático». Para estudiar la precisión, repite con otra semilla o usa la tabla de corridas repetidas. En hospital, compara con un médico más. En inversión, cambia la variación anual y observa pérdidas y ganancias. Explica siempre que son resultados del modelo.</p></article>
         </div>
         <div class="manual-end"><p>Si el internet del aula falla, abre <code>index.html</code> desde la carpeta descomprimida. Puedes navegar y simular directamente en el navegador.</p><a class="button button-primary" href="#laboratorio">Volver al laboratorio <svg class="icon" aria-hidden="true"><use href="#i-arrow"></use></svg></a></div>
 
